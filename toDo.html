@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: white;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            margin-top: 5px;
+            flex: 1;
+            border: 1px solid;
+        }
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .buttons {
+            display: flex;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>To do List</h1>
+    <input type="text" id="newTaskInput">
+    <button id="addTaskBtn">დავალების დამატება</button>
+    <div class="container">
+        <div class="column" id="todoColumn">
+            <h2>შესასრულებელი</h2>
+        </div>
+        <div class="column" id="finishedColumn">
+            <h2>შესრულებული</h2>
+        </div>
+    </div>
+
+    <script>
+        let taskIdCounter = 0;
+
+        const newTaskInput = document.getElementById('newTaskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const todoColumn = document.getElementById('todoColumn');
+        const finishedColumn = document.getElementById('finishedColumn');
+
+        addTaskBtn.addEventListener('click', () => {
+            const taskText = newTaskInput.value.trim();
+            if (taskText) {
+                const taskId = `task-${taskIdCounter++}`;
+                addTask(taskText, taskId, todoColumn, true);
+                newTaskInput.value = '';
+            }
+        });
+
+        function addTask(text, id, column, isTodo) {
+            let taskDiv = document.getElementById(id);
+
+            if (!taskDiv) {
+                taskDiv = document.createElement('div');
+                taskDiv.id = id; 
+                taskDiv.className = 'task';
+
+                const taskText = document.createElement('span');
+                taskText.textContent = text;
+                taskDiv.appendChild(taskText);
+
+                const buttonsDiv = document.createElement('div');
+                buttonsDiv.className = 'buttons';
+
+                if (isTodo) {
+                    const finishBtn = document.createElement('button');
+                    finishBtn.textContent = 'დასრულება';
+                    finishBtn.addEventListener('click', () => moveTask(id, text, finishedColumn, false));
+                    buttonsDiv.appendChild(finishBtn);
+                } else {
+                    const returnBtn = document.createElement('button');
+                    returnBtn.textContent = 'დაბრუნება';
+                    returnBtn.addEventListener('click', () => moveTask(id, text, todoColumn, true));
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'წაშლა';
+                    deleteBtn.addEventListener('click', () => deleteTask(id));
+
+                    buttonsDiv.appendChild(returnBtn);
+                    buttonsDiv.appendChild(deleteBtn);
+                }
+
+                taskDiv.appendChild(buttonsDiv);
+            }
+
+            column.appendChild(taskDiv);
+        }
+
+        function moveTask(id, text, targetColumn, isTodo) {
+            const taskDiv = document.getElementById(id);
+            if (taskDiv) {
+                const buttonsDiv = taskDiv.querySelector('.buttons');
+                buttonsDiv.innerHTML = '';
+
+                if (isTodo) {
+                    const finishBtn = document.createElement('button');
+                    finishBtn.textContent = 'დასრულება';
+                    finishBtn.addEventListener('click', () => moveTask(id, text, finishedColumn, false));
+                    buttonsDiv.appendChild(finishBtn);
+                } else {
+                    const returnBtn = document.createElement('button');
+                    returnBtn.textContent = 'დაბრუნება';
+                    returnBtn.addEventListener('click', () => moveTask(id, text, todoColumn, true));
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'წაშლა';
+                    deleteBtn.addEventListener('click', () => deleteTask(id));
+
+                    buttonsDiv.appendChild(returnBtn);
+                    buttonsDiv.appendChild(deleteBtn);
+                }
+
+                targetColumn.appendChild(taskDiv);
+            }
+        }
+
+        function deleteTask(id) {
+            const taskDiv = document.getElementById(id);
+            if (taskDiv) {
+                taskDiv.remove();
+            }
+        }
+    </script>
+</body>
+</html>
